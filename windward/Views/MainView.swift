@@ -9,7 +9,13 @@ import AppKit
 import Carbon
 import SwiftUI
 
+enum ManagerMode {
+    case selecting
+    case arranging
+}
+
 struct MainView: View {
+    @State private var mode: ManagerMode = .selecting
     @State private var focussedWindow: Int = 0
     @State private var selectedWindow: Int? = nil
     @State private var localKeyMonitor: Any?
@@ -59,39 +65,46 @@ struct MainView: View {
         }
         .onAppear {
             localKeyMonitor = NSEvent.addLocalMonitorForEvents(
-                matching: .keyDown
-            ) { event in
-                if event.keyCode == UInt16(kVK_RightArrow) {
-                    focussedWindow = (focussedWindow + 1) % nWindows
-                    return nil
-                }
-
-                if event.keyCode == UInt16(kVK_LeftArrow) {
-                    focussedWindow = (focussedWindow - 1 + nWindows) % nWindows
-                    return nil
-                }
-
-                if event.keyCode == UInt16(kVK_Return) {
-                    selectedWindow = focussedWindow
-                    return nil
-                }
-
-                if event.keyCode == UInt16(kVK_Escape) {
-                    if selectedWindow != nil {
-                        selectedWindow = nil
-                    } else {
-                        self.onDismiss()
-                    }
-
-                    return nil
-                }
-
-                return event
-            }
+                matching: .keyDown,
+                handler: self.handleKeyEvent)
         }
         .onDisappear {
             removeLocalKeyMonitors()
         }
+    }
+
+    private func handleKeyEvent(_ event: NSEvent) -> NSEvent? {
+        if mode == .selecting {
+            if event.keyCode == UInt16(kVK_RightArrow) {
+                focussedWindow = (focussedWindow + 1) % nWindows
+                return nil
+            }
+
+            if event.keyCode == UInt16(kVK_LeftArrow) {
+                focussedWindow =
+                    (focussedWindow - 1 + nWindows) % nWindows
+                return nil
+            }
+
+            if event.keyCode == UInt16(kVK_Return) {
+                selectedWindow = focussedWindow
+                mode = .arranging
+                return nil
+            }
+
+            if event.keyCode == UInt16(kVK_Escape) {
+                self.onDismiss()
+                return nil
+            }
+        } else if mode == .arranging {
+            if event.keyCode == UInt16(kVK_Escape) {
+                selectedWindow = nil
+                mode = .selecting
+                return nil
+            }
+        }
+
+        return event
     }
 
     private func windowRectangle(focussed: Bool = false, selected: Bool = false)
