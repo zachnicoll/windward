@@ -12,9 +12,8 @@ func WindowRectangle(focussed: Bool = false, selected: Bool = false)
 {
     RoundedRectangle(cornerRadius: 12, style: .circular)
         .stroke(
-            selected ? Color.green : focussed ? Color.blue : Color.gray,
+            selected ? Color.green : focussed ? Color.blue : Color.white,
             lineWidth: selected || focussed ? 3 : 1
         )
-        .frame(width: 100, height: 100)  // Set desired size
         .background(Color.clear)  // Clear background
 }

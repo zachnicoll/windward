@@ -14,6 +14,12 @@ enum ManagerMode {
     case arranging
 }
 
+struct Keybind: Identifiable {
+    let id = UUID()
+    let text: String
+    let icon: String  // SF Symbol name
+}
+
 @Observable
 class WindowManagerService {
     var mode: ManagerMode = .selecting
@@ -60,5 +66,20 @@ class WindowManagerService {
         }
 
         return event
+    }
+
+    func keybindsForMode() -> [Keybind] {
+        switch self.mode {
+        case .selecting:
+            return [
+                Keybind(text: "Select", icon: "checkmark"),
+                Keybind(text: "Cancel", icon: "xmark"),
+                Keybind(text: "Move", icon: "move.3d"),
+            ]
+        case .arranging:
+            return [
+                Keybind(text: "Cancel", icon: "xmark")
+            ]
+        }
     }
 }

@@ -13,12 +13,13 @@ struct MainView: View {
     @State private var localKeyMonitor: Any?
 
     init(onDismiss: @escaping () -> Void) {
-        self.windowManagerService = WindowManagerService(nWindows: 6, onEscape: onDismiss)
+        self.windowManagerService = WindowManagerService(
+            nWindows: 6, onEscape: onDismiss)
     }
 
     var body: some View {
         FloatingContainerView {
-            VStack(spacing: 16) {
+            VStack(spacing: 4) {
                 Grid(
                     alignment: .center, horizontalSpacing: 12,
                     verticalSpacing: 12
@@ -46,12 +47,30 @@ struct MainView: View {
                             selected: windowManagerService.selectedWindow == 5)
                     }
                 }
+                .padding(.all, 16)
+                .border(
+                    Color.white
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                Button("Quit") {
-                    NSApplication.shared.terminate(nil)
+                Spacer()
+
+                // Keybinds display
+                HStack(spacing: 16) {
+                    ForEach(
+                        windowManagerService.keybindsForMode()
+                    ) { keybind in
+                        KeybindDisplay(keybind: keybind)
+                    }
+
+                    Spacer()
+
+                    Button("Quit") {
+                        NSApplication.shared.terminate(nil)
+                    }
                 }
             }
-            .frame(width: WINDOW_WIDTH, height: WINDOW_HEIGHT)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .onAppear {
             localKeyMonitor = NSEvent.addLocalMonitorForEvents(
