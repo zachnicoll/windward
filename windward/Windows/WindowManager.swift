@@ -31,8 +31,11 @@ class WindowManager: ObservableObject {
         windowController.showWindow(nil)
         windowController.window?.center()
         
-        // Focus the floating window we just opened
+        // Focus the floating window
         focusWindow()
+        
+        // Position the floating window
+        positionWindow()
 
         // Add key monitors to react to key-press events
         let escapeKeyMonitor = KeyMonitor(
@@ -67,6 +70,23 @@ class WindowManager: ObservableObject {
             window.orderFrontRegardless()
             NSApp.activate(ignoringOtherApps: true)
         }
+    }
+    
+    private func positionWindow() {
+        guard let window = windowController.window,
+              let screen = NSScreen.main else { return }
+        
+        let screenFrame = screen.visibleFrame
+        let windowSize = window.frame.size
+        
+        // Center horizontally
+        let x = screenFrame.midX - (windowSize.width / 2)
+        
+        // 1/5 from the top of the screen
+        // Note: macOS coordinates start from bottom-left, so we calculate from the top
+        let y = screenFrame.maxY - (screenFrame.height * 0.2) - windowSize.height
+        
+        window.setFrameOrigin(NSPoint(x: x, y: y))
     }
 
     private func restorePreviousFocus() {

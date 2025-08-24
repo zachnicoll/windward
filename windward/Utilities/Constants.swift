@@ -7,6 +7,6 @@
 
 import SwiftUI
 
-let WINDOW_HEIGHT: CGFloat = 300
+let WINDOW_HEIGHT: CGFloat = 400
 let WINDOW_WIDTH: CGFloat = WINDOW_HEIGHT * (16/9)
 
