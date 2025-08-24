@@ -5,22 +5,19 @@
 //  Created by Zachary Nicoll on 24/8/2025.
 //
 
+import Carbon
 import Foundation
 import SwiftUI
 
-struct KeyMonitor {
-    let keyCode: UInt16
-    let handler: () -> Void
-}
-
 class WindowManager: ObservableObject {
-    private var windowController = FloatingWindowController(
-        rootView: MainWindow())
-    private var localKeyMonitor: Any?
+    private var windowController: FloatingWindowController<MainView>?
     private var previousApplication: NSRunningApplication?
 
     init() {
-        // Show automatically for quick visibilty on dev changes
+        self.windowController = FloatingWindowController(
+            rootView: MainView(onDismiss: hideFloatingWindow))
+
+        // Show window immediately
         showFloatingWindow()
     }
 
@@ -28,36 +25,23 @@ class WindowManager: ObservableObject {
         // Store the currently active application before showing our window
         previousApplication = NSWorkspace.shared.frontmostApplication
 
-        windowController.showWindow(nil)
-        windowController.window?.center()
-        
+        windowController?.showWindow(nil)
+        windowController?.window?.center()
+
         // Focus the floating window
         focusWindow()
-        
+
         // Position the floating window
         positionWindow()
-
-        // Add key monitors to react to key-press events
-        let escapeKeyMonitor = KeyMonitor(
-            keyCode: 53,
-            handler: self.hideFloatingWindow
-        )
-
-        addLocalKeyMonitors(
-            monitors: [
-                escapeKeyMonitor
-            ]
-        )
     }
 
     func hideFloatingWindow() {
-        windowController.close()
-        removeLocalKeyMonitors()
+        windowController?.close()
         restorePreviousFocus()
     }
 
     private func focusWindow() {
-        guard let window = windowController.window else { return }
+        guard let window = windowController?.window else { return }
 
         // Make the window key and bring it to front
         window.makeKeyAndOrderFront(nil)
@@ -71,21 +55,23 @@ class WindowManager: ObservableObject {
             NSApp.activate(ignoringOtherApps: true)
         }
     }
-    
+
     private func positionWindow() {
-        guard let window = windowController.window,
-              let screen = NSScreen.main else { return }
-        
+        guard let window = windowController?.window,
+            let screen = NSScreen.main
+        else { return }
+
         let screenFrame = screen.visibleFrame
         let windowSize = window.frame.size
-        
+
         // Center horizontally
         let x = screenFrame.midX - (windowSize.width / 2)
-        
+
         // 1/5 from the top of the screen
         // Note: macOS coordinates start from bottom-left, so we calculate from the top
-        let y = screenFrame.maxY - (screenFrame.height * 0.2) - windowSize.height
-        
+        let y =
+            screenFrame.maxY - (screenFrame.height * 0.2) - windowSize.height
+
         window.setFrameOrigin(NSPoint(x: x, y: y))
     }
 
@@ -110,39 +96,5 @@ class WindowManager: ObservableObject {
                 return
             }
         }
-    }
-
-    private func addLocalKeyMonitors(monitors: [KeyMonitor]) {
-        localKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) {
-            event in
-            for monitor in monitors {
-                if event.keyCode == monitor.keyCode {
-                    // Execute the handler asynchronously to avoid blocking
-                    DispatchQueue.main.async {
-                        monitor.handler()
-                    }
-
-                    // Immediately consume the event to prevent further processing
-                    return nil
-                }
-            }
-
-            return event
-        }
-    }
-
-    private func removeLocalKeyMonitors() {
-        if let monitor = localKeyMonitor {
-            NSEvent.removeMonitor(monitor)
-            localKeyMonitor = nil
-        }
-    }
-
-    private func handleEscapeKey() {
-        hideFloatingWindow()
-    }
-
-    deinit {
-        removeLocalKeyMonitors()
     }
 }
