@@ -6,16 +6,17 @@
 //
 
 import Foundation
+import SwiftUI
 
 class WindowManager: ObservableObject {
-    private var floatingWindow = FloatingWindowController(rootView: FloatingContentView())
-    
+    private var mainWindow = FloatingWindowController(rootView: MainWindow())
+
     func showFloatingWindow() {
-        floatingWindow.showWindow(nil)
-        floatingWindow.window?.center()
+        mainWindow.showWindow(nil)
+        mainWindow.window?.center()
     }
-    
+
     func hideFloatingWindow() {
-        floatingWindow.close()
+        mainWindow.close()
     }
 }

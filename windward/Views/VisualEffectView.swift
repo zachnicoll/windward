@@ -5,13 +5,13 @@
 //  Created by Zachary Nicoll on 24/8/2025.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 struct VisualEffectView: NSViewRepresentable {
     let material: NSVisualEffectView.Material
     let blendingMode: NSVisualEffectView.BlendingMode
-    
+
     init(
         material: NSVisualEffectView.Material = .hudWindow,
         blendingMode: NSVisualEffectView.BlendingMode = .behindWindow
@@ -19,7 +19,7 @@ struct VisualEffectView: NSViewRepresentable {
         self.material = material
         self.blendingMode = blendingMode
     }
-    
+
     func makeNSView(context: Context) -> NSVisualEffectView {
         let view = NSVisualEffectView()
         view.material = material
@@ -27,7 +27,7 @@ struct VisualEffectView: NSViewRepresentable {
         view.state = .active
         return view
     }
-    
+
     func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
         nsView.material = material
         nsView.blendingMode = blendingMode
