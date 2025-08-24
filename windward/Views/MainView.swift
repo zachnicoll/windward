@@ -6,24 +6,14 @@
 //
 
 import AppKit
-import Carbon
 import SwiftUI
 
-enum ManagerMode {
-    case selecting
-    case arranging
-}
-
 struct MainView: View {
-    @State private var mode: ManagerMode = .selecting
-    @State private var focussedWindow: Int = 0
-    @State private var selectedWindow: Int? = nil
+    @State private var windowManagerService: WindowManagerService
     @State private var localKeyMonitor: Any?
-    private var nWindows: Int = 6
-    private let onDismiss: () -> Void
 
     init(onDismiss: @escaping () -> Void) {
-        self.onDismiss = onDismiss
+        self.windowManagerService = WindowManagerService(nWindows: 6, onEscape: onDismiss)
     }
 
     var body: some View {
@@ -34,26 +24,26 @@ struct MainView: View {
                     verticalSpacing: 12
                 ) {
                     GridRow {
-                        windowRectangle(
-                            focussed: focussedWindow == 0,
-                            selected: selectedWindow == 0)
-                        windowRectangle(
-                            focussed: focussedWindow == 1,
-                            selected: selectedWindow == 1)
-                        windowRectangle(
-                            focussed: focussedWindow == 2,
-                            selected: selectedWindow == 2)
+                        WindowRectangle(
+                            focussed: windowManagerService.focussedWindow == 0,
+                            selected: windowManagerService.selectedWindow == 0)
+                        WindowRectangle(
+                            focussed: windowManagerService.focussedWindow == 1,
+                            selected: windowManagerService.selectedWindow == 1)
+                        WindowRectangle(
+                            focussed: windowManagerService.focussedWindow == 2,
+                            selected: windowManagerService.selectedWindow == 2)
                     }
                     GridRow {
-                        windowRectangle(
-                            focussed: focussedWindow == 3,
-                            selected: selectedWindow == 3)
-                        windowRectangle(
-                            focussed: focussedWindow == 4,
-                            selected: selectedWindow == 4)
-                        windowRectangle(
-                            focussed: focussedWindow == 5,
-                            selected: selectedWindow == 5)
+                        WindowRectangle(
+                            focussed: windowManagerService.focussedWindow == 3,
+                            selected: windowManagerService.selectedWindow == 3)
+                        WindowRectangle(
+                            focussed: windowManagerService.focussedWindow == 4,
+                            selected: windowManagerService.selectedWindow == 4)
+                        WindowRectangle(
+                            focussed: windowManagerService.focussedWindow == 5,
+                            selected: windowManagerService.selectedWindow == 5)
                     }
                 }
 
@@ -66,57 +56,11 @@ struct MainView: View {
         .onAppear {
             localKeyMonitor = NSEvent.addLocalMonitorForEvents(
                 matching: .keyDown,
-                handler: self.handleKeyEvent)
+                handler: windowManagerService.handleKeyEvent)
         }
         .onDisappear {
             removeLocalKeyMonitors()
         }
-    }
-
-    private func handleKeyEvent(_ event: NSEvent) -> NSEvent? {
-        if mode == .selecting {
-            if event.keyCode == UInt16(kVK_RightArrow) {
-                focussedWindow = (focussedWindow + 1) % nWindows
-                return nil
-            }
-
-            if event.keyCode == UInt16(kVK_LeftArrow) {
-                focussedWindow =
-                    (focussedWindow - 1 + nWindows) % nWindows
-                return nil
-            }
-
-            if event.keyCode == UInt16(kVK_Return) {
-                selectedWindow = focussedWindow
-                mode = .arranging
-                return nil
-            }
-
-            if event.keyCode == UInt16(kVK_Escape) {
-                self.onDismiss()
-                return nil
-            }
-        } else if mode == .arranging {
-            if event.keyCode == UInt16(kVK_Escape) {
-                selectedWindow = nil
-                mode = .selecting
-                return nil
-            }
-        }
-
-        return event
-    }
-
-    private func windowRectangle(focussed: Bool = false, selected: Bool = false)
-        -> some View
-    {
-        RoundedRectangle(cornerRadius: 12, style: .circular)
-            .stroke(
-                selected ? Color.green : focussed ? Color.blue : Color.gray,
-                lineWidth: selected || focussed ? 3 : 1
-            )
-            .frame(width: 100, height: 100)  // Set desired size
-            .background(Color.clear)  // Clear background
     }
 
     private func removeLocalKeyMonitors() {
