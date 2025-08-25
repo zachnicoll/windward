@@ -13,8 +13,7 @@ struct MainView: View {
     @State private var localKeyMonitor: Any?
 
     init(onDismiss: @escaping () -> Void) {
-        self.windowManagerService = WindowManagerService(
-            nWindows: 6, onEscape: onDismiss)
+        self.windowManagerService = WindowManagerService(onEscape: onDismiss)
     }
 
     var body: some View {
@@ -26,38 +25,17 @@ struct MainView: View {
                         verticalSpacing: 12
                     ) {
                         GridRow {
-                            WindowRectangle(
-                                focussed: windowManagerService.focussedWindow
-                                    == 0,
-                                selected: windowManagerService.selectedWindow
-                                    == 0)
-                            WindowRectangle(
-                                focussed: windowManagerService.focussedWindow
-                                    == 1,
-                                selected: windowManagerService.selectedWindow
-                                    == 1)
-                            WindowRectangle(
-                                focussed: windowManagerService.focussedWindow
-                                    == 2,
-                                selected: windowManagerService.selectedWindow
-                                    == 2)
-                        }
-                        GridRow {
-                            WindowRectangle(
-                                focussed: windowManagerService.focussedWindow
-                                    == 3,
-                                selected: windowManagerService.selectedWindow
-                                    == 3)
-                            WindowRectangle(
-                                focussed: windowManagerService.focussedWindow
-                                    == 4,
-                                selected: windowManagerService.selectedWindow
-                                    == 4)
-                            WindowRectangle(
-                                focussed: windowManagerService.focussedWindow
-                                    == 5,
-                                selected: windowManagerService.selectedWindow
-                                    == 5)
+                            ForEach(
+                                0..<windowManagerService.getNumberOfApps(), id: \.self
+                            ) { index in
+                                WindowRectangle(
+                                    focussed: windowManagerService
+                                        .focussedWindow
+                                        == index,
+                                    selected: windowManagerService
+                                        .selectedWindow
+                                        == index)
+                            }
                         }
                     }
                     .padding(.all, 16)

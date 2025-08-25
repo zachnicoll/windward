@@ -25,16 +25,30 @@ class WindowManagerService {
     var mode: ManagerMode = .selecting
     var focussedWindow: Int = 0
     var selectedWindow: Int? = nil
-    var nWindows: Int
+
+    // Add app list property
+    var availableApps: [WindowDiscoveryService.AppWindow] = []
 
     private let onEscape: () -> Void
+    private var refreshTimer: Timer? = nil
 
-    init(nWindows: Int, onEscape: @escaping () -> Void) {
-        self.nWindows = nWindows
+    init(onEscape: @escaping () -> Void) {
         self.onEscape = onEscape
+
+        // Initial load
+        refreshAppList()
+
+        // Start periodic refresh (every 2 seconds)
+        startPeriodicRefresh(interval: 2.0)
+    }
+
+    deinit {
+        stopPeriodicRefresh()
     }
 
     func handleKeyEvent(_ event: NSEvent) -> NSEvent? {
+        let nWindows = getNumberOfApps()
+
         if mode == .selecting {
             if event.keyCode == UInt16(kVK_RightArrow) {
                 focussedWindow = (focussedWindow + 1) % nWindows
@@ -92,6 +106,34 @@ class WindowManagerService {
             return [
                 Keybind(text: "Cancel", icon: "escape")
             ]
+        }
+    }
+
+    func getNumberOfApps() -> Int {
+        return self.availableApps.count
+    }
+
+    private func startPeriodicRefresh(interval: TimeInterval) {
+        refreshTimer = Timer.scheduledTimer(
+            withTimeInterval: interval, repeats: true
+        ) { [weak self] _ in
+            self?.refreshAppList()
+        }
+    }
+
+    private func stopPeriodicRefresh() {
+        self.refreshTimer?.invalidate()
+        self.refreshTimer = nil
+    }
+
+    private func refreshAppList() {
+        self.availableApps =
+            WindowDiscoveryService.getVisibleApplicationWindows()
+
+        if focussedWindow > self.availableApps.count - 1 {
+            // We've selected a window outside the bounds of our number
+            // of apps, so select the last possible app
+            focussedWindow = self.availableApps.count - 1
         }
     }
 }
