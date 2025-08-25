@@ -17,13 +17,11 @@ struct FloatingContainerView<Content: View>: View {
 
     var body: some View {
         content
-            .padding(24)
-            .frame(minWidth: 200, minHeight: 100)
             .background(
                 VisualEffectView(
-                    material: .hudWindow, blendingMode: .behindWindow
+                    material: .menu, blendingMode: .behindWindow
                 )
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
             )
     }
 }

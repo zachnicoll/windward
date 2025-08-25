@@ -47,6 +47,18 @@ class WindowManagerService {
                 return nil
             }
 
+            if event.keyCode == UInt16(kVK_UpArrow) {
+                focussedWindow =
+                    (focussedWindow + (nWindows / 2)) % nWindows
+                return nil
+            }
+
+            if event.keyCode == UInt16(kVK_DownArrow) {
+                focussedWindow =
+                    (nWindows + focussedWindow - nWindows / 2) % nWindows
+                return nil
+            }
+
             if event.keyCode == UInt16(kVK_Return) {
                 selectedWindow = focussedWindow
                 mode = .arranging
@@ -72,13 +84,13 @@ class WindowManagerService {
         switch self.mode {
         case .selecting:
             return [
-                Keybind(text: "Select", icon: "checkmark"),
-                Keybind(text: "Cancel", icon: "xmark"),
-                Keybind(text: "Move", icon: "move.3d"),
+                Keybind(text: "Move", icon: "arrowkeys"),
+                Keybind(text: "Select", icon: "return"),
+                Keybind(text: "Hide", icon: "escape"),
             ]
         case .arranging:
             return [
-                Keybind(text: "Cancel", icon: "xmark")
+                Keybind(text: "Cancel", icon: "escape")
             ]
         }
     }

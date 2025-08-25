@@ -65,12 +65,15 @@ class WindowManager: ObservableObject {
         let windowSize = window.frame.size
 
         // Center horizontally
-        let x = screenFrame.midX - (windowSize.width / 2)
+        let x = screenFrame.midX - (windowSize.width / 2.0)
 
-        // 1/5 from the top of the screen
-        // Note: macOS coordinates start from bottom-left, so we calculate from the top
+        // Position vertically from the top of the screen
+        let screenHeight = screenFrame.height
+        let percentageToTopOfScreen = 1.0 / 8.0
+
         let y =
-            screenFrame.maxY - (screenFrame.height * 0.2) - windowSize.height
+            screenFrame.maxY - (screenHeight * percentageToTopOfScreen)
+            - windowSize.height
 
         window.setFrameOrigin(NSPoint(x: x, y: y))
     }

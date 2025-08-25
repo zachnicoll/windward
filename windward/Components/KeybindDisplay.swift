@@ -9,15 +9,17 @@ import SwiftUI
 
 func KeybindDisplay(keybind: Keybind) -> some View {
     HStack(spacing: 4) {
-        Image(systemName: keybind.icon)
-            .foregroundColor(.secondary)
-            .font(.caption)
         Text(keybind.text)
-            .font(.caption)
-            .foregroundColor(.secondary)
+            .font(.caption2)
+            .foregroundColor(.primary)
+
+        Image(systemName: keybind.icon)
+            .foregroundColor(.primary)
+            .font(.caption2)
+            .padding(.all, 4)
+            .background(Color.gray.opacity(0.2))
+            .cornerRadius(4)
     }
+    .frame(height: 24)
     .padding(.horizontal, 6)
-    .padding(.vertical, 2)
-    .background(Color.gray.opacity(0.1))
-    .cornerRadius(4)
 }
