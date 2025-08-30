@@ -38,29 +38,32 @@ class WindowManagerService {
         // Initial load
         refreshAppList()
 
-        // Start periodic refresh (every 2 seconds)
-        startPeriodicRefresh(interval: 2.0)
+        // Start periodic refresh of open windows
+        startPeriodicRefresh(interval: 1.0)
     }
 
     deinit {
         stopPeriodicRefresh()
     }
-    
+
     func getWindowIndexInAppList(windowId: CGWindowID) -> Int? {
         return availableApps.firstIndex(where: { $0.windowID == windowId })
     }
-    
+
     func getAppAtIndex(index: Int) -> WindowDiscoveryService.AppWindow {
         return availableApps[index]
     }
-    
-    func getAppForWindowId(_ windowId: CGWindowID) -> WindowDiscoveryService.AppWindow? {
+
+    func getAppForWindowId(_ windowId: CGWindowID) -> WindowDiscoveryService
+        .AppWindow?
+    {
         return availableApps.first(where: { $0.windowID == windowId })
     }
 
     func handleKeyEvent(_ event: NSEvent) -> NSEvent? {
         let nWindows = getNumberOfApps()
-        let focussedAppIndex = getWindowIndexInAppList(windowId: focussedWindow) ?? 0
+        let focussedAppIndex =
+            getWindowIndexInAppList(windowId: focussedWindow) ?? 0
 
         if mode == .selecting {
             if event.keyCode == UInt16(kVK_RightArrow) {
@@ -128,8 +131,8 @@ class WindowManagerService {
     func getNumberOfApps() -> Int {
         return self.availableApps.count
     }
-    
-    private func startPeriodicRefresh(interval: TimeInterval) {
+
+    func startPeriodicRefresh(interval: TimeInterval) {
         refreshTimer = Timer.scheduledTimer(
             withTimeInterval: interval, repeats: true
         ) { [weak self] _ in
@@ -137,21 +140,25 @@ class WindowManagerService {
         }
     }
 
-    private func stopPeriodicRefresh() {
+    func stopPeriodicRefresh() {
         self.refreshTimer?.invalidate()
         self.refreshTimer = nil
     }
 
     private func refreshAppList() {
-        self.availableApps =
-            WindowDiscoveryService.getVisibleApplicationWindows()
-        
-        let focussedWindowIndex = getWindowIndexInAppList(windowId: focussedWindow)
-        
-        if focussedWindowIndex == nil {
-            // We've selected a window outside the bounds of our number
-            // of apps, so select the last possible app
-            focussedWindow = self.availableApps.last!.windowID
+        DispatchQueue.main.async {
+            self.availableApps =
+                WindowDiscoveryService.getVisibleApplicationWindows()
+
+            let focussedWindowIndex = self.getWindowIndexInAppList(
+                windowId: self.focussedWindow)
+
+            if focussedWindowIndex == nil {
+                // We've selected a window outside the bounds of our number
+                // of apps, so select the last possible app
+                self.focussedWindow = self.availableApps.last!.windowID
+            }
         }
+
     }
 }
