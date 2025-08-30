@@ -7,7 +7,10 @@
 
 import SwiftUI
 
-func WindowRectangle(focussed: Bool = false, selected: Bool = false)
+func WindowRectangle(
+    focussed: Bool = false, selected: Bool = false,
+    appWindow: WindowDiscoveryService.AppWindow
+)
     -> some View
 {
     RoundedRectangle(cornerRadius: 12, style: .circular)
@@ -19,4 +22,10 @@ func WindowRectangle(focussed: Bool = false, selected: Bool = false)
             lineWidth: (selected || focussed) ? 3 : 1
         )
         .background(Color.clear)  // Clear background
+        .overlay(
+            Text(appWindow.appName)
+                .font(.caption2)
+                .foregroundColor(.primary)
+                .lineLimit(1)
+        )
 }

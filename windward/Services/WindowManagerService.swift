@@ -23,8 +23,8 @@ struct Keybind: Identifiable {
 @Observable
 class WindowManagerService {
     var mode: ManagerMode = .selecting
-    var focussedWindow: Int = 0
-    var selectedWindow: Int? = nil
+    var focussedWindow: CGWindowID = 0
+    var selectedWindow: CGWindowID? = nil
 
     // Add app list property
     var availableApps: [WindowDiscoveryService.AppWindow] = []
@@ -45,31 +45,47 @@ class WindowManagerService {
     deinit {
         stopPeriodicRefresh()
     }
+    
+    func getWindowIndexInAppList(windowId: CGWindowID) -> Int? {
+        return availableApps.firstIndex(where: { $0.windowID == windowId })
+    }
+    
+    func getAppAtIndex(index: Int) -> WindowDiscoveryService.AppWindow {
+        return availableApps[index]
+    }
+    
+    func getAppForWindowId(_ windowId: CGWindowID) -> WindowDiscoveryService.AppWindow? {
+        return availableApps.first(where: { $0.windowID == windowId })
+    }
 
     func handleKeyEvent(_ event: NSEvent) -> NSEvent? {
         let nWindows = getNumberOfApps()
+        let focussedAppIndex = getWindowIndexInAppList(windowId: focussedWindow) ?? 0
 
         if mode == .selecting {
             if event.keyCode == UInt16(kVK_RightArrow) {
-                focussedWindow = (focussedWindow + 1) % nWindows
+                let nextAppIndex = (focussedAppIndex + 1) % nWindows
+                focussedWindow = getAppAtIndex(index: nextAppIndex).windowID
                 return nil
             }
 
             if event.keyCode == UInt16(kVK_LeftArrow) {
-                focussedWindow =
-                    (focussedWindow - 1 + nWindows) % nWindows
+                let nextAppIndex = (focussedAppIndex - 1 + nWindows) % nWindows
+                focussedWindow = getAppAtIndex(index: nextAppIndex).windowID
                 return nil
             }
 
             if event.keyCode == UInt16(kVK_UpArrow) {
-                focussedWindow =
-                    (focussedWindow + (nWindows / 2)) % nWindows
+                let nextAppIndex =
+                    (focussedAppIndex + (nWindows / 2)) % nWindows
+                focussedWindow = getAppAtIndex(index: nextAppIndex).windowID
                 return nil
             }
 
             if event.keyCode == UInt16(kVK_DownArrow) {
-                focussedWindow =
-                    (nWindows + focussedWindow - nWindows / 2) % nWindows
+                let nextAppIndex =
+                    (nWindows + focussedAppIndex - nWindows / 2) % nWindows
+                focussedWindow = getAppAtIndex(index: nextAppIndex).windowID
                 return nil
             }
 
@@ -112,7 +128,7 @@ class WindowManagerService {
     func getNumberOfApps() -> Int {
         return self.availableApps.count
     }
-
+    
     private func startPeriodicRefresh(interval: TimeInterval) {
         refreshTimer = Timer.scheduledTimer(
             withTimeInterval: interval, repeats: true
@@ -129,11 +145,13 @@ class WindowManagerService {
     private func refreshAppList() {
         self.availableApps =
             WindowDiscoveryService.getVisibleApplicationWindows()
-
-        if focussedWindow > self.availableApps.count - 1 {
+        
+        let focussedWindowIndex = getWindowIndexInAppList(windowId: focussedWindow)
+        
+        if focussedWindowIndex == nil {
             // We've selected a window outside the bounds of our number
             // of apps, so select the last possible app
-            focussedWindow = self.availableApps.count - 1
+            focussedWindow = self.availableApps.last!.windowID
         }
     }
 }

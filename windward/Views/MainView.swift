@@ -20,24 +20,7 @@ struct MainView: View {
         FloatingContainerView {
             VStack(spacing: 4) {
                 VStack {
-                    Grid(
-                        alignment: .center, horizontalSpacing: 12,
-                        verticalSpacing: 12
-                    ) {
-                        GridRow {
-                            ForEach(
-                                0..<windowManagerService.getNumberOfApps(), id: \.self
-                            ) { index in
-                                WindowRectangle(
-                                    focussed: windowManagerService
-                                        .focussedWindow
-                                        == index,
-                                    selected: windowManagerService
-                                        .selectedWindow
-                                        == index)
-                            }
-                        }
-                    }
+                    WindowMapView(windowManagerService: self.windowManagerService, containerSize: CGSize.init(width: WINDOW_WIDTH, height: WINDOW_HEIGHT))
                 }
                 .padding(.all, 16)
 
