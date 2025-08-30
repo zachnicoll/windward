@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9BF452A22E62E58B0021DCF9 /* SpiceKey in Frameworks */ = {isa = PBXBuildFile; productRef = 9BF452A12E62E58B0021DCF9 /* SpiceKey */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		9BA6489B2E5AC6DB001360BD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BF452A22E62E58B0021DCF9 /* SpiceKey in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = windward;
 			packageProductDependencies = (
+				9BF452A12E62E58B0021DCF9 /* SpiceKey */,
 			);
 			productName = windward;
 			productReference = 9BA648892E5AC6D9001360BD /* windward.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = 9BA648802E5AC6D9001360BD;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				9BF452A02E62E5020021DCF9 /* XCRemoteSwiftPackageReference "SpiceKey" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9BA6488A2E5AC6D9001360BD /* Products */;
 			projectDirPath = "";
@@ -543,6 +552,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9BF452A02E62E5020021DCF9 /* XCRemoteSwiftPackageReference "SpiceKey" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:Kyome22/SpiceKey.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9BF452A12E62E58B0021DCF9 /* SpiceKey */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9BF452A02E62E5020021DCF9 /* XCRemoteSwiftPackageReference "SpiceKey" */;
+			productName = SpiceKey;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9BA648812E5AC6D9001360BD /* Project object */;
 }

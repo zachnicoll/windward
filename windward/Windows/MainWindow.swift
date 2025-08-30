@@ -7,11 +7,13 @@
 
 import Carbon
 import Foundation
+import SpiceKey
 import SwiftUI
 
-class WindowManager: ObservableObject {
+class MainWindow: ObservableObject {
     private var windowController: FloatingWindowController<MainView>?
     private var previousApplication: NSRunningApplication?
+    private var spiceKey: SpiceKey?
 
     init() {
         self.windowController = FloatingWindowController(
@@ -19,6 +21,13 @@ class WindowManager: ObservableObject {
 
         // Show window immediately
         showFloatingWindow()
+
+        // Register global hotkeys
+        registerGlobalHotkeys()
+    }
+    
+    deinit {
+        spiceKey?.unregister()
     }
 
     func showFloatingWindow() {
@@ -100,4 +109,22 @@ class WindowManager: ObservableObject {
             }
         }
     }
+
+    private func registerGlobalHotkeys() {
+        let key = Key.return
+        let modifierFlags = ModifierFlags.sftCmd
+        let keyCombo = KeyCombination(key, modifierFlags)
+
+        spiceKey = SpiceKey(
+            keyCombo,
+            keyDownHandler: {
+                [weak self] in
+                Task { @MainActor in
+                    self?.showFloatingWindow()
+                }
+            }
+        )
+        spiceKey?.register()
+    }
+
 }

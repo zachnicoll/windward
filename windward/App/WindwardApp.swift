@@ -10,7 +10,7 @@ import SwiftUI
 
 @main
 struct WindwardApp: App {
-    @StateObject private var windowManager = WindowManager()
+    @StateObject private var mainWindow = MainWindow()
 
     init() {
         // Schedule the activation policy change for the next run loop cycle
@@ -22,10 +22,10 @@ struct WindwardApp: App {
     var body: some Scene {
         MenuBarExtra("Windward", systemImage: "wind") {
             Button("Open Window") {
-                windowManager.showFloatingWindow()
+                mainWindow.showFloatingWindow()
             }
             Button("Close Window") {
-                windowManager.hideFloatingWindow()
+                mainWindow.hideFloatingWindow()
             }
             Divider()
             Button("Quit") {

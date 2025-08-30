@@ -1,0 +1,15 @@
+{
+  "originHash" : "1331cb99d1e935504083afb99b0a075a2c485d4af5b76157fe2169ada420b258",
+  "pins" : [
+    {
+      "identity" : "spicekey",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:Kyome22/SpiceKey.git",
+      "state" : {
+        "revision" : "2f4afcbb5dc44ed07097dc4a58898ea2f911d529",
+        "version" : "6.0.1"
+      }
+    }
+  ],
+  "version" : 3
+}

@@ -38,11 +38,6 @@ struct MainView: View {
                             }
                         }
                     }
-                    .padding(.all, 16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.white, lineWidth: 1)
-                    )
                 }
                 .padding(.all, 16)
 
