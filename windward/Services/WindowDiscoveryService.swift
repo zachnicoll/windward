@@ -15,6 +15,7 @@ class WindowDiscoveryService {
         let windowID: CGWindowID
         let bounds: CGRect
         let processID: pid_t
+        let icon: NSImage?
     }
 
     static func getVisibleApplicationWindows() -> [AppWindow] {
@@ -76,6 +77,8 @@ class WindowDiscoveryService {
                 width: width,
                 height: height
             )
+            
+            let icon = appsByPID[processID]?.icon
 
             return AppWindow(
                 appName: appName,
@@ -83,7 +86,8 @@ class WindowDiscoveryService {
                 windowTitle: windowTitle,
                 windowID: windowID,
                 bounds: bounds,
-                processID: processID
+                processID: processID,
+                icon: icon
             )
         }
     }

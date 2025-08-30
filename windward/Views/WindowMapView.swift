@@ -21,7 +21,7 @@ struct WindowMapView: View {
             // Absolutely positioned windows
             ForEach(
                 Array(windowManagerService.availableApps.enumerated()),
-                id: \.element.processID
+                id: \.element.windowID
             ) { index, appWindow in
                 WindowRectangle(
                     focussed: windowManagerService.focussedWindow
